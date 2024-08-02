@@ -37,7 +37,7 @@ else:
 
 
 def main():
-    outputLogo()
+    # outputLogo()
     parser = argparse.ArgumentParser(description=_("Fofa-hack v{} 使用说明").format(config.VERSION_NUM))
     group = parser.add_mutually_exclusive_group(required=True)
     group.add_argument('--keyword', '-k', help=_('fofa搜索关键字'))
