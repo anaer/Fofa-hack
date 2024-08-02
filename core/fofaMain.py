@@ -122,6 +122,11 @@ class FofaMain:
             return proxies
 
     def get_proxy(self):
+        proxy = self.get_proxy1()
+        print('代理:', proxy)
+        return proxy 
+
+    def get_proxy1(self):
         # 防止有通过API调用FOFA的情况
         if self.proxy:
             return self.proxy
@@ -158,20 +163,28 @@ class FofaMain:
         print(colorize(_("[*] 爬取页面为:https://fofa.info/result?qbase64={}").format(searchbs64), "green"))
         if config.AUTHORIZATION:
             return searchbs64, ""
-        try:
 
+        html = ""
+        try:
             html = requests.get(url="https://fofa.info/result?qbase64=" + searchbs64,
                                 headers=fofaUseragent.getFofaPageNumHeaders(), timeout=self.timeout,
                                 proxies=self.get_proxy()) \
                 .text
             tree = etree.HTML(html)
-            countnum = tree.xpath('//span[@class="hsxa-highlight-color"]/text()')[0]
+            count = tree.xpath('//span[@class="hsxa-highlight-color"]/text()')
+            countnum = count[0] if count else '0'
+
+            if countnum == '0':
+                error = tree.xpath('//div[@class="errorPage"]//text()')[4]
+                print(error)
+
             # standaloneIpNum = tree.xpath('//span[@class="hsxa-highlight-color"]/text()')[1]
         except Exception as e:
             print("\033[1;31m[-] error:{}\033[0m".format(e))
             countnum = '0'
             print(
                 "\033[1;31m[-] perhaps there is a problem with your network or your area has been officially banned by Fofa, so the program exits\033[0m")
+            # print("html:\n", html)
             self._destroy()
         print(colorize(_("[*] 存在数量:{}").format(countnum), "green"))
         # print("[*] 独立IP数量:" + standaloneIpNum)
@@ -363,9 +376,9 @@ class FofaMain:
                 for data in self.level_data.format_data:
                     if self.level == "1":
                         self.host_set.add(data)
-                    elif self.level == "2":
+                    elif self.level == "2" and data.__containts__("url"):
                         self.host_set.add(data["url"])
-                    else:
+                    elif data.__containts__("id"):
                         self.host_set.add(data["id"])
 
                 time.sleep(self.time_sleep)
@@ -625,6 +638,7 @@ class FofaMain:
                     self.cleanInitParameters()
                     self.search_key = clipKeyWord(line.strip())
                     self.filename = "{}_{}.{}".format(unit.md5(self.search_key), int(time.time()), self.output)
+                    # print('输出文件', self.search_key, self.filename)
                     self.output_data = OutputData(self.filename, self.level, pattern=self.output)
                     searchbs64, countnum = self.getFofaKeywordsCount(self.search_key)
                     if str(countnum) == "0" and len(str(countnum)) == 1:

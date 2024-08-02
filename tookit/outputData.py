@@ -14,11 +14,12 @@ class OutputData:
 
     ENCODING_TYPE="utf-8"
 
-    def __init__(self,filename, outputname, level="1",pattern="txt"):
-        self.filename=filename
-        self.outputname=outputname
+    def __init__(self,filename, level="1",pattern="txt"):
+        self.filename = filename
         self.pattern = pattern if self.checkPatternStandard(pattern) else "txt"
         self.level=level
+        if not self.filename.endswith(pattern):
+            self.filename="{}.{}".format(self.filename,self.pattern)
         # self.path=os.path.join(os.path.abspath(os.path.dirname(os.path.dirname(__file__))),self.filename)
 
     def initFile(self):
@@ -89,5 +90,5 @@ class OutputData:
         return
 
 if __name__ == '__main__':
-    output = OutputData("123", "json")
+    output = OutputData("123", pattern="json")
     output.outputJson(["123", "456", "789"])
