@@ -41,7 +41,8 @@ def clipKeyWord(keyword):
     @param keyword:
     @return:
     """
-    tempkey = keyword.replace("'", '"')
+    # 将单引号处理为双引号, 同时去除头尾的引号
+    tempkey = keyword.replace("'", '"').strip('"')
     # print(tempkey)
     # 单关键字情况 并且 关键字内部有空格
     if ("&&" or "||") not in tempkey and " " in tempkey:
